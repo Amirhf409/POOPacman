@@ -1,67 +1,73 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-// Commit 11: Ventana principal — conecta PanelTablero, JuegoGUI y teclado
+// Ventana principal del juego. Hereda de JFrame
+// Conecta el panel grafico, el teclado y la logica del juego
 public class VentanaJuego extends JFrame {
 
-    private static final String TITULO = "Pac-Man — POO";
-
-    private JuegoGUI     juego;
+    private JuegoGUI juego;
     private PanelTablero panel;
-    private JLabel       lblEstado;
+    private JLabel etiquetaEstado;
 
     public VentanaJuego() {
-        // Objetos iniciales para construir el panel antes de iniciar el juego
-        Tablero    tableroTemp   = new Tablero();
-        PacMan     pacmanTemp    = new PacMan(16, 10);
+        // Creamos objetos temporales solo para poder construir el panel
+        Tablero tableroTemp = new Tablero();
+        PacMan pacmanTemp = new PacMan(16, 10);
         Fantasma[] fantasmasTemp = {
-            new FantasmaPerseguidor(9, 9),
-            new FantasmaRondador(9, 11)
+                new FantasmaPerseguidor(9, 9),
+                new FantasmaRondador(9, 11)
         };
 
         panel = new PanelTablero(tableroTemp, pacmanTemp, fantasmasTemp);
         juego = new JuegoGUI(panel);
+        juego.iniciar(); // inicia el juego y el Timer
 
-        // Primero iniciamos el juego (crea los objetos reales y actualiza el panel)
-        juego.iniciar();
-
-        // Luego armamos la ventana con el panel ya listo
         configurarVentana();
         agregarComponentes();
         agregarTeclado();
     }
 
     private void configurarVentana() {
-        setTitle(TITULO);
+        setTitle("Pac-Man");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setLayout(new BorderLayout());
     }
 
     private void agregarComponentes() {
-        // Etiqueta de estado en la parte superior
-        lblEstado = new JLabel("  Vidas: ♥♥♥   Puntaje: 0   Nivel: 1",
-                               SwingConstants.LEFT);
-        lblEstado.setBackground(Color.BLACK);
-        lblEstado.setForeground(Color.YELLOW);
-        lblEstado.setOpaque(true);
-        lblEstado.setFont(new Font("Monospaced", Font.BOLD, 14));
-        lblEstado.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 8));
+        // Etiqueta de estado arriba de la pantalla
+        etiquetaEstado = new JLabel("  Vidas: 3   Puntaje: 0");
+        etiquetaEstado.setBackground(Color.BLACK);
+        etiquetaEstado.setForeground(Color.YELLOW);
+        etiquetaEstado.setOpaque(true);
+        etiquetaEstado.setFont(new Font("Monospaced", Font.BOLD, 14));
 
-        add(lblEstado, BorderLayout.NORTH);
-        add(panel,     BorderLayout.CENTER);
+        add(etiquetaEstado, BorderLayout.NORTH);
+        add(panel, BorderLayout.CENTER);
 
-        // Timer que refresca la etiqueta cada 100 ms
-        Timer labelTimer = new Timer(100, e -> actualizarEtiqueta());
-        labelTimer.start();
+        // Timer que actualiza la etiqueta cada 150 ms
+        Timer timerEtiqueta = new Timer(150, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                actualizarEtiqueta();
+            }
+        });
+        timerEtiqueta.start();
 
-        pack();
+        pack(); // ajusta el tamaño de la ventana al panel
         setLocationRelativeTo(null); // centrar en pantalla
     }
 
     private void agregarTeclado() {
-        // KeyAdapter: herencia de adaptador, solo sobreescribimos lo que necesitamos
+        // KeyAdapter es una clase abstracta — la usamos con herencia anonima
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -69,42 +75,39 @@ public class VentanaJuego extends JFrame {
             }
         });
         setFocusable(true);
-        requestFocusInWindow();
     }
 
     private void actualizarEtiqueta() {
-        PacMan p     = juego.getPacman();
-        int    vidas = Math.max(0, p.getVidas());
-        String corazones = "♥".repeat(vidas);
-
+        PacMan p = juego.getPacman();
         String texto;
+
         if (!juego.isJugando()) {
             if (p.getVidas() <= 0) {
-                texto = "  ★ GAME OVER ★   Puntaje final: " + p.getPuntaje();
-                lblEstado.setForeground(Color.RED);
+                texto = "  GAME OVER — Puntaje final: " + p.getPuntaje();
+                etiquetaEstado.setForeground(Color.RED);
             } else {
-                texto = "  ★ ¡GANASTE! ★   Puntaje: " + p.getPuntaje()
-                      + "   Vidas: " + corazones;
-                lblEstado.setForeground(Color.GREEN);
+                texto = "  ¡GANASTE! — Puntaje: " + p.getPuntaje();
+                etiquetaEstado.setForeground(Color.GREEN);
             }
         } else {
-            String super_ = p.isSuperPoder()
-                ? "   [SUPER " + p.getTurnosSuper() + " turnos]" : "";
-            texto = "  Vidas: " + corazones
-                  + "   Puntaje: " + p.getPuntaje()
-                  + "   Nivel: "   + juego.getNivel()
-                  + super_;
-            lblEstado.setForeground(Color.YELLOW);
+            texto = "  Vidas: " + p.getVidas()
+                    + "   Puntaje: " + p.getPuntaje()
+                    + "   Nivel: " + juego.getNivel();
+
+            if (p.isSuperPoder()) {
+                texto = texto + "   [SUPER: " + p.getTurnosSuper() + "]";
+            }
         }
-        lblEstado.setText(texto);
+
+        etiquetaEstado.setText(texto);
     }
 
-    // Punto de entrada de la version con interfaz grafica
     public static void main(String[] args) {
-        // invokeLater garantiza que la UI se crea en el hilo de Swing (EDT)
-        SwingUtilities.invokeLater(() -> {
-            VentanaJuego ventana = new VentanaJuego();
-            ventana.setVisible(true);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                VentanaJuego ventana = new VentanaJuego();
+                ventana.setVisible(true);
+            }
         });
     }
 }

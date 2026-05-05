@@ -1,7 +1,10 @@
 import javax.swing.Timer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-// Commit 10: Logica del juego adaptada para GUI — usa Timer de Swing en vez de Scanner
+// Logica del juego para la version grafica
+// Usa Timer de Swing en vez de un while con Scanner
 public class JuegoGUI {
 
     private Tablero tablero;
@@ -10,37 +13,39 @@ public class JuegoGUI {
     private boolean jugando;
     private int nivel;
 
-    // Direccion actual de PacMan (se actualiza con el teclado)
+    // Guarda la ultima direccion que presiono el jugador
     private int dx;
     private int dy;
 
-    private static final int PACMAN_X  = 16;
-    private static final int PACMAN_Y  = 10;
-    private static final int DELAY_MS  = 200; // ms entre cada tick del juego
+    private static final int PACMAN_X = 16;
+    private static final int PACMAN_Y = 10;
+    private static final int VELOCIDAD = 200; // milisegundos entre cada tick
 
     private PanelTablero panel;
     private Timer timer;
 
     public JuegoGUI(PanelTablero panel) {
-        this.panel  = panel;
-        this.nivel  = 1;
-        this.dx     = 0;
-        this.dy     = 0;
+        this.panel = panel;
+        this.nivel = 1;
+        this.dx = 0;
+        this.dy = 0;
     }
 
-    // Inicializa el tablero y arranca el Timer
     public void iniciar() {
         iniciarNivel();
-        panel.actualizar(tablero, pacman, fantasmas);
 
-        // Cada DELAY_MS milisegundos se ejecuta un tick del juego
-        timer = new Timer(DELAY_MS, e -> tick());
+        // El Timer llama a tick() cada VELOCIDAD milisegundos
+        timer = new Timer(VELOCIDAD, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                tick();
+            }
+        });
         timer.start();
     }
 
     private void iniciarNivel() {
-        tablero   = new Tablero();
-        pacman    = new PacMan(PACMAN_X, PACMAN_Y);
+        tablero = new Tablero();
+        pacman = new PacMan(PACMAN_X, PACMAN_Y);
         fantasmas = new Fantasma[] {
             new FantasmaPerseguidor(9, 9),
             new FantasmaRondador(9, 11)
@@ -48,7 +53,7 @@ public class JuegoGUI {
         jugando = true;
     }
 
-    // Un paso del bucle de juego — equivalente a una iteracion del while en Juego.java
+    // Un tick = un paso del juego (mover, colisionar, verificar)
     private void tick() {
         if (!jugando) {
             timer.stop();
@@ -63,22 +68,28 @@ public class JuegoGUI {
         panel.actualizar(tablero, pacman, fantasmas);
     }
 
-    // Recibe el codigo de tecla desde VentanaJuego y actualiza la direccion
+    // VentanaJuego llama este metodo cuando el jugador presiona una tecla
     public void procesarTecla(int keyCode) {
-        switch (keyCode) {
-            case KeyEvent.VK_W: case KeyEvent.VK_UP:    dx = -1; dy =  0; break;
-            case KeyEvent.VK_S: case KeyEvent.VK_DOWN:  dx =  1; dy =  0; break;
-            case KeyEvent.VK_A: case KeyEvent.VK_LEFT:  dx =  0; dy = -1; break;
-            case KeyEvent.VK_D: case KeyEvent.VK_RIGHT: dx =  0; dy =  1; break;
+        if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
+            dx = -1; dy = 0;
+        } else if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) {
+            dx = 1; dy = 0;
+        } else if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) {
+            dx = 0; dy = -1;
+        } else if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) {
+            dx = 0; dy = 1;
         }
     }
 
-    // Polimorfismo: se llama moverHacia segun el tipo real de cada fantasma
     private void moverFantasmas() {
         boolean superActivo = pacman.isSuperPoder();
+
         for (Fantasma f : fantasmas) {
             if (!f.isActivo()) continue;
+
             f.setAsustado(superActivo);
+
+            // Polimorfismo: cada fantasma se mueve diferente segun su tipo
             if (f instanceof FantasmaPerseguidor) {
                 ((FantasmaPerseguidor) f).moverHacia(pacman, tablero);
             } else if (f instanceof FantasmaRondador) {
@@ -90,11 +101,14 @@ public class JuegoGUI {
     private void verificarColisiones() {
         for (Fantasma f : fantasmas) {
             if (!f.isActivo()) continue;
+
             if (f.getX() == pacman.getX() && f.getY() == pacman.getY()) {
                 if (pacman.isSuperPoder()) {
+                    // PacMan come al fantasma
                     f.setActivo(false);
                     pacman.sumarPuntaje(200);
                 } else {
+                    // Fantasma atrapa a PacMan
                     pacman.perderVida();
                     if (pacman.isActivo()) {
                         pacman.reiniciar(-1, -1);
@@ -118,8 +132,7 @@ public class JuegoGUI {
         }
     }
 
-    // Getters para que VentanaJuego pueda leer el estado y mostrarlo
-    public boolean isJugando()  { return jugando; }
-    public PacMan  getPacman()  { return pacman;  }
-    public int     getNivel()   { return nivel;   }
+    public boolean isJugando() { return jugando; }
+    public PacMan getPacman()  { return pacman; }
+    public int getNivel()      { return nivel; }
 }
