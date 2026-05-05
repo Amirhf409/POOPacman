@@ -3,8 +3,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-// Logica del juego para la version grafica
-// Usa Timer de Swing en vez de un while con Scanner
 public class JuegoGUI {
 
     private Tablero tablero;
@@ -12,14 +10,12 @@ public class JuegoGUI {
     private Fantasma[] fantasmas;
     private boolean jugando;
     private int nivel;
-
-    // Guarda la ultima direccion que presiono el jugador
     private int dx;
     private int dy;
 
     private static final int PACMAN_X = 16;
     private static final int PACMAN_Y = 10;
-    private static final int VELOCIDAD = 200; // milisegundos entre cada tick
+    private static final int VELOCIDAD = 200;
 
     private PanelTablero panel;
     private Timer timer;
@@ -34,7 +30,6 @@ public class JuegoGUI {
     public void iniciar() {
         iniciarNivel();
 
-        // El Timer llama a tick() cada VELOCIDAD milisegundos
         timer = new Timer(VELOCIDAD, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 tick();
@@ -53,7 +48,6 @@ public class JuegoGUI {
         jugando = true;
     }
 
-    // Un tick = un paso del juego (mover, colisionar, verificar)
     private void tick() {
         if (!jugando) {
             timer.stop();
@@ -68,7 +62,6 @@ public class JuegoGUI {
         panel.actualizar(tablero, pacman, fantasmas);
     }
 
-    // VentanaJuego llama este metodo cuando el jugador presiona una tecla
     public void procesarTecla(int keyCode) {
         if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
             dx = -1; dy = 0;
@@ -86,10 +79,8 @@ public class JuegoGUI {
 
         for (Fantasma f : fantasmas) {
             if (!f.isActivo()) continue;
-
             f.setAsustado(superActivo);
 
-            // Polimorfismo: cada fantasma se mueve diferente segun su tipo
             if (f instanceof FantasmaPerseguidor) {
                 ((FantasmaPerseguidor) f).moverHacia(pacman, tablero);
             } else if (f instanceof FantasmaRondador) {
@@ -104,11 +95,9 @@ public class JuegoGUI {
 
             if (f.getX() == pacman.getX() && f.getY() == pacman.getY()) {
                 if (pacman.isSuperPoder()) {
-                    // PacMan come al fantasma
                     f.setActivo(false);
                     pacman.sumarPuntaje(200);
                 } else {
-                    // Fantasma atrapa a PacMan
                     pacman.perderVida();
                     if (pacman.isActivo()) {
                         pacman.reiniciar(-1, -1);

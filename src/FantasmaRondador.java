@@ -1,4 +1,3 @@
-
 public class FantasmaRondador extends Fantasma {
     private int turnosAleatorios;
     private static final int CICLO = 6;
@@ -10,7 +9,6 @@ public class FantasmaRondador extends Fantasma {
 
     @Override
     public void mover(int dx, int dy, Tablero tablero) {
-
     }
 
     public void moverHacia(PacMan pacman, Tablero tablero) {
@@ -22,12 +20,9 @@ public class FantasmaRondador extends Fantasma {
             dir = direccionAleatoria(tablero);
             turnosAleatorios--;
         } else {
-
-            int targetX = pacman.getX();
-            int targetY = pacman.getY();
-            dir = dirigirseA(targetX, targetY, tablero);
-
-            if (Math.abs(getX() - pacman.getX()) + Math.abs(getY() - pacman.getY()) < 3) {
+            dir = dirigirseA(pacman.getX(), pacman.getY(), tablero);
+            int distancia = Math.abs(getX() - pacman.getX()) + Math.abs(getY() - pacman.getY());
+            if (distancia < 3) {
                 turnosAleatorios = CICLO;
             }
         }

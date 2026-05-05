@@ -9,29 +9,13 @@ public abstract class Entidad {
         this.simbolo = simbolo;
     }
 
-    public int getX() {
-        return x;
-    }
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public char getSimbolo() { return simbolo; }
 
-    public int getY() {
-        return y;
-    }
-
-    public char getSimbolo() {
-        return simbolo;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    protected void setSimbolo(char simbolo) {
-        this.simbolo = simbolo;
-    }
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
+    protected void setSimbolo(char simbolo) { this.simbolo = simbolo; }
 
     public abstract void mover(int dx, int dy, Tablero tablero);
 

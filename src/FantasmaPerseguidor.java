@@ -1,4 +1,3 @@
-
 public class FantasmaPerseguidor extends Fantasma {
 
     public FantasmaPerseguidor(int x, int y) {
@@ -7,7 +6,6 @@ public class FantasmaPerseguidor extends Fantasma {
 
     @Override
     public void mover(int dx, int dy, Tablero tablero) {
-
     }
 
     public void moverHacia(PacMan pacman, Tablero tablero) {

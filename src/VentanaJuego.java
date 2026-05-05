@@ -10,8 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-// Ventana principal del juego. Hereda de JFrame
-// Conecta el panel grafico, el teclado y la logica del juego
 public class VentanaJuego extends JFrame {
 
     private JuegoGUI juego;
@@ -19,17 +17,16 @@ public class VentanaJuego extends JFrame {
     private JLabel etiquetaEstado;
 
     public VentanaJuego() {
-        // Creamos objetos temporales solo para poder construir el panel
         Tablero tableroTemp = new Tablero();
         PacMan pacmanTemp = new PacMan(16, 10);
         Fantasma[] fantasmasTemp = {
-                new FantasmaPerseguidor(9, 9),
-                new FantasmaRondador(9, 11)
+            new FantasmaPerseguidor(9, 9),
+            new FantasmaRondador(9, 11)
         };
 
         panel = new PanelTablero(tableroTemp, pacmanTemp, fantasmasTemp);
         juego = new JuegoGUI(panel);
-        juego.iniciar(); // inicia el juego y el Timer
+        juego.iniciar();
 
         configurarVentana();
         agregarComponentes();
@@ -44,7 +41,6 @@ public class VentanaJuego extends JFrame {
     }
 
     private void agregarComponentes() {
-        // Etiqueta de estado arriba de la pantalla
         etiquetaEstado = new JLabel("  Vidas: 3   Puntaje: 0");
         etiquetaEstado.setBackground(Color.BLACK);
         etiquetaEstado.setForeground(Color.YELLOW);
@@ -54,7 +50,6 @@ public class VentanaJuego extends JFrame {
         add(etiquetaEstado, BorderLayout.NORTH);
         add(panel, BorderLayout.CENTER);
 
-        // Timer que actualiza la etiqueta cada 150 ms
         Timer timerEtiqueta = new Timer(150, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 actualizarEtiqueta();
@@ -62,12 +57,11 @@ public class VentanaJuego extends JFrame {
         });
         timerEtiqueta.start();
 
-        pack(); // ajusta el tamaño de la ventana al panel
-        setLocationRelativeTo(null); // centrar en pantalla
+        pack();
+        setLocationRelativeTo(null);
     }
 
     private void agregarTeclado() {
-        // KeyAdapter es una clase abstracta — la usamos con herencia anonima
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -86,13 +80,13 @@ public class VentanaJuego extends JFrame {
                 texto = "  GAME OVER — Puntaje final: " + p.getPuntaje();
                 etiquetaEstado.setForeground(Color.RED);
             } else {
-                texto = "  ¡GANASTE! — Puntaje: " + p.getPuntaje();
+                texto = "  GANASTE! — Puntaje: " + p.getPuntaje();
                 etiquetaEstado.setForeground(Color.GREEN);
             }
         } else {
             texto = "  Vidas: " + p.getVidas()
-                    + "   Puntaje: " + p.getPuntaje()
-                    + "   Nivel: " + juego.getNivel();
+                  + "   Puntaje: " + p.getPuntaje()
+                  + "   Nivel: " + juego.getNivel();
 
             if (p.isSuperPoder()) {
                 texto = texto + "   [SUPER: " + p.getTurnosSuper() + "]";

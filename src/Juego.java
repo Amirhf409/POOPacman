@@ -20,22 +20,12 @@ public class Juego {
     public void iniciar() {
         System.out.println("╔══════════════════════╗");
         System.out.println("║    P A C - M A N     ║");
-        System.out.println("║  Consola Edition     ║");
         System.out.println("╠══════════════════════╣");
-        System.out.println("║ Controles:           ║");
         System.out.println("║  W = arriba          ║");
         System.out.println("║  S = abajo           ║");
         System.out.println("║  A = izquierda       ║");
         System.out.println("║  D = derecha         ║");
         System.out.println("║  Q = salir           ║");
-        System.out.println("╠══════════════════════╣");
-        System.out.println("║ Simbolos:            ║");
-        System.out.println("║  C / @ = PacMan      ║");
-        System.out.println("║  B = Blinky (rojo)   ║");
-        System.out.println("║  P = Pinky (rosa)    ║");
-        System.out.println("║  F = Fantasma asust. ║");
-        System.out.println("║  . = punto (10 pts)  ║");
-        System.out.println("║  O = super (50 pts)  ║");
         System.out.println("╚══════════════════════╝");
         System.out.println("\nPresiona ENTER para comenzar...");
         scanner.nextLine();
@@ -47,12 +37,10 @@ public class Juego {
     private void iniciarNivel() {
         tablero = new Tablero();
         pacman = new PacMan(PACMAN_X, PACMAN_Y);
-
         fantasmas = new Fantasma[] {
-                new FantasmaPerseguidor(9, 9),
-                new FantasmaRondador(9, 11)
+            new FantasmaPerseguidor(9, 9),
+            new FantasmaRondador(9, 11)
         };
-
         jugando = true;
     }
 
@@ -61,12 +49,11 @@ public class Juego {
             limpiarPantalla();
             mostrarEstado();
             tablero.imprimir(pacman, fantasmas);
-            mostrarInfo();
 
             String input = leerInput();
             if (input.equalsIgnoreCase("q")) {
                 jugando = false;
-                System.out.println("\n¡Hasta luego!");
+                System.out.println("\nHasta luego!");
                 break;
             }
 
@@ -90,25 +77,17 @@ public class Juego {
     }
 
     private void procesarInput(String input) {
-        if (input.isEmpty())
-            return;
+        if (input.isEmpty()) return;
         char tecla = Character.toUpperCase(input.charAt(0));
 
-        switch (tecla) {
-            case 'W':
-                pacman.mover(-1, 0, tablero);
-                break;
-            case 'S':
-                pacman.mover(1, 0, tablero);
-                break;
-            case 'A':
-                pacman.mover(0, -1, tablero);
-                break;
-            case 'D':
-                pacman.mover(0, 1, tablero);
-                break;
-            default:
-                System.out.println("Tecla no válida.");
+        if (tecla == 'W') {
+            pacman.mover(-1, 0, tablero);
+        } else if (tecla == 'S') {
+            pacman.mover(1, 0, tablero);
+        } else if (tecla == 'A') {
+            pacman.mover(0, -1, tablero);
+        } else if (tecla == 'D') {
+            pacman.mover(0, 1, tablero);
         }
     }
 
@@ -116,8 +95,7 @@ public class Juego {
         boolean superActivo = pacman.isSuperPoder();
 
         for (Fantasma f : fantasmas) {
-            if (!f.isActivo())
-                continue;
+            if (!f.isActivo()) continue;
             f.setAsustado(superActivo);
 
             if (f instanceof FantasmaPerseguidor) {
@@ -130,21 +108,16 @@ public class Juego {
 
     private void verificarColisiones() {
         for (Fantasma f : fantasmas) {
-            if (!f.isActivo())
-                continue;
+            if (!f.isActivo()) continue;
+
             if (f.getX() == pacman.getX() && f.getY() == pacman.getY()) {
                 if (pacman.isSuperPoder()) {
-
                     f.setActivo(false);
                     pacman.sumarPuntaje(200);
-                    System.out.println("¡Comiste un fantasma! +200 pts");
                 } else {
-
                     pacman.perderVida();
                     if (pacman.isActivo()) {
-                        System.out.println("¡Te atraparon! Vidas restantes: " + pacman.getVidas());
                         pacman.reiniciar(-1, -1);
-
                         for (Fantasma reset : fantasmas) {
                             reset.reiniciar(-1, -1);
                             reset.setActivo(true);
@@ -165,41 +138,23 @@ public class Juego {
             System.out.println("\n╔══════════════════════╗");
             System.out.println("║    ¡ G A N A S T E ! ║");
             System.out.printf("║  Puntaje: %6d pts ║%n", pacman.getPuntaje());
-            System.out.printf("║  Vidas:   %6d     ║%n", pacman.getVidas());
             System.out.println("╚══════════════════════╝");
             jugando = false;
         }
     }
 
     private void mostrarEstado() {
-        System.out.printf("  NIVEL: %d   PUNTAJE: %d   VIDAS: %s   PUNTOS RESTANTES: %d%n",
-                nivel,
-                pacman.getPuntaje(),
-                "♥ ".repeat(pacman.getVidas()).trim(),
-                tablero.getTotalPuntos());
+        System.out.printf("  NIVEL: %d   PUNTAJE: %d   VIDAS: %d   PUNTOS: %d%n",
+            nivel, pacman.getPuntaje(), pacman.getVidas(), tablero.getTotalPuntos());
         if (pacman.isSuperPoder()) {
             System.out.println("  *** SUPER PODER ACTIVO (" + pacman.getTurnosSuper() + " turnos) ***");
         }
         System.out.println();
     }
 
-    private void mostrarInfo() {
-        System.out.println();
-        for (Fantasma f : fantasmas) {
-            String estado = f.isAsustado() ? "[ASUSTADO]" : "[ACTIVO]";
-            String activo = f.isActivo() ? estado : "[COMIDO]";
-            System.out.println("  " + f.getNombre() + " " + activo +
-                    " → (" + f.getX() + "," + f.getY() + ")");
-        }
-    }
-
     private void limpiarPantalla() {
-
         System.out.print("\033[H\033[2J");
         System.out.flush();
-
-        for (int i = 0; i < 3; i++)
-            System.out.println();
     }
 
     private void pausa(int ms) {

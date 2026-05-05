@@ -1,9 +1,8 @@
-
 public class Tablero {
 
-    public static final char PARED = '#';
-    public static final char VACIO = ' ';
-    public static final char PUNTO = '.';
+    public static final char PARED       = '#';
+    public static final char VACIO       = ' ';
+    public static final char PUNTO       = '.';
     public static final char SUPER_PUNTO = 'O';
 
     private char[][] mapa;
@@ -12,25 +11,25 @@ public class Tablero {
     private int totalPuntos;
 
     private static final String[] MAPA_BASE = {
-            "#####################",
-            "#O........#........O#",
-            "#.##.####.#.####.##.#",
-            "#...................#",
-            "#.##.#.#####.#.##..#",
-            "#....#...#...#.....#",
-            "####.###.#.###.#####",
-            "   #.#         #.#  ",
-            "####.# ##   ## #.###",
-            "      .#       #.   ",
-            "####.# ####### #.###",
-            "   #.#         #.#  ",
-            "####.# ####### #.###",
-            "#O.......#.......O.#",
-            "#.##.###.#.###.##..#",
-            "#..#.....V.....#...#",
-            "##.#.#.#####.#.#.###",
-            "#....#...........#.#",
-            "#####################"
+        "#####################",
+        "#O........#........O#",
+        "#.##.####.#.####.##.#",
+        "#...................#",
+        "#.##.#.#####.#.##..#",
+        "#....#...#...#.....#",
+        "####.###.#.###.#####",
+        "   #.#         #.#  ",
+        "####.# ##   ## #.###",
+        "      .#       #.   ",
+        "####.# ####### #.###",
+        "   #.#         #.#  ",
+        "####.# ####### #.###",
+        "#O.......#.......O.#",
+        "#.##.###.#.###.##..#",
+        "#..#.....V.....#...#",
+        "##.#.#.#####.#.#.###",
+        "#....#...........#.#",
+        "#####################"
     };
 
     public Tablero() {
@@ -46,9 +45,7 @@ public class Tablero {
             String fila = MAPA_BASE[i];
             for (int j = 0; j < columnas; j++) {
                 char c = (j < fila.length()) ? fila.charAt(j) : VACIO;
-
-                if (c == 'V')
-                    c = VACIO;
+                if (c == 'V') c = VACIO;
                 mapa[i][j] = c;
                 if (c == PUNTO || c == SUPER_PUNTO) {
                     totalPuntos++;
@@ -57,43 +54,24 @@ public class Tablero {
         }
     }
 
-    public int getFilas() {
-        return filas;
-    }
-
-    public int getColumnas() {
-        return columnas;
-    }
-
-    public int getTotalPuntos() {
-        return totalPuntos;
-    }
-
-    public char getCelda(int x, int y) {
-        return mapa[x][y];
-    }
-
-    public void setCelda(int x, int y, char c) {
-        mapa[x][y] = c;
-    }
-
-    public void decrementarPuntos() {
-        totalPuntos--;
-    }
+    public int getFilas() { return filas; }
+    public int getColumnas() { return columnas; }
+    public int getTotalPuntos() { return totalPuntos; }
+    public char getCelda(int x, int y) { return mapa[x][y]; }
+    public void setCelda(int x, int y, char c) { mapa[x][y] = c; }
+    public void decrementarPuntos() { totalPuntos--; }
 
     public boolean esValido(int x, int y) {
         return x >= 0 && x < filas && y >= 0 && y < columnas;
     }
 
     public boolean esPared(int x, int y) {
-        if (!esValido(x, y))
-            return true;
+        if (!esValido(x, y)) return true;
         return mapa[x][y] == PARED;
     }
 
     public boolean esLibreParaFantasma(int x, int y) {
-        if (!esValido(x, y))
-            return false;
+        if (!esValido(x, y)) return false;
         return mapa[x][y] != PARED;
     }
 

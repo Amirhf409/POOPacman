@@ -1,4 +1,3 @@
-
 public class PacMan extends Personaje {
     private int puntaje;
     private int inicioX;
@@ -15,29 +14,14 @@ public class PacMan extends Personaje {
         this.turnosSuper = 0;
     }
 
-    public int getPuntaje() {
-        return puntaje;
-    }
-
-    public boolean isSuperPoder() {
-        return superPoder;
-    }
-
-    public int getTurnosSuper() {
-        return turnosSuper;
-    }
-
-    public void setPuntaje(int puntaje) {
-        this.puntaje = puntaje;
-    }
-
-    public void sumarPuntaje(int puntos) {
-        this.puntaje += puntos;
-    }
+    public int getPuntaje() { return puntaje; }
+    public boolean isSuperPoder() { return superPoder; }
+    public int getTurnosSuper() { return turnosSuper; }
+    public void sumarPuntaje(int puntos) { puntaje += puntos; }
 
     public void activarSuperPoder(int turnos) {
-        this.superPoder = true;
-        this.turnosSuper = turnos;
+        superPoder = true;
+        turnosSuper = turnos;
         setSimbolo('@');
     }
 
@@ -56,8 +40,7 @@ public class PacMan extends Personaje {
         int nx = getX() + dx;
         int ny = getY() + dy;
 
-        if (tablero.esPared(nx, ny))
-            return;
+        if (tablero.esPared(nx, ny)) return;
 
         char celda = tablero.getCelda(nx, ny);
 

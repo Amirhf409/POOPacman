@@ -1,4 +1,3 @@
-
 public abstract class Personaje extends Entidad {
     private int vidas;
     private boolean activo;
@@ -9,21 +8,10 @@ public abstract class Personaje extends Entidad {
         this.activo = true;
     }
 
-    public int getVidas() {
-        return vidas;
-    }
-
-    public boolean isActivo() {
-        return activo;
-    }
-
-    public void setVidas(int vidas) {
-        this.vidas = vidas;
-    }
-
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
+    public int getVidas() { return vidas; }
+    public boolean isActivo() { return activo; }
+    public void setVidas(int vidas) { this.vidas = vidas; }
+    public void setActivo(boolean activo) { this.activo = activo; }
 
     public void perderVida() {
         vidas--;
